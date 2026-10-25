@@ -1,4 +1,8 @@
 
+
+import sys
+from colorama import Fore, Style
+
 from app.calculator import Calculator
 from app.calculation import CalculationFactory
 from app.exceptions import (
@@ -24,6 +28,21 @@ class CalculatorREPL:
         )
         self.input_func = input_func
         self.output_func = output_func
+        
+        self.color_enabled = (
+            output_func is print and sys.stdout.isatty()
+        )
+
+
+    def display(self, message, color=None):
+        """Display a message with optional color."""
+        if self.color_enabled and color:
+            self.output_func(
+                f"{color}{message}{Style.RESET_ALL}"
+            )
+        else:
+            self.output_func(message)
+
 
     @staticmethod
     def format_number(number):
@@ -36,7 +55,7 @@ class CalculatorREPL:
         """Display all supported commands."""
         operations = CalculationFactory.OPERATIONS
 
-        self.output_func("Available operations:")
+        self.display("Available operations:", Fore.CYAN)
         self.output_func("  " + ", ".join(operations))
 
         self.output_func("\nOther commands:")
@@ -82,9 +101,12 @@ class CalculatorREPL:
                 command, a, b
             )
 
-            self.output_func(
-                f"Result: {self.format_number(calculation.result)}"
+            
+            self.display(
+                f"Result: {self.format_number(calculation.result)}",
+                Fore.GREEN
             )
+
             return True
 
         # Other commands do not need arguments.
@@ -118,15 +140,15 @@ class CalculatorREPL:
 
         elif command == "clear":
             self.calculator.clear()
-            self.output_func("History cleared.")
+            self.display("History cleared.", Fore.YELLOW)
 
         elif command == "undo":
             self.calculator.undo()
-            self.output_func("Undo successful.")
+            self.display("Undo successful.", Fore.YELLOW)
 
         elif command == "redo":
             self.calculator.redo()
-            self.output_func("Redo successful.")
+            self.display("Redo successful.", Fore.YELLOW)
 
         elif command == "save":
             path = self.calculator.save()
@@ -177,7 +199,7 @@ class CalculatorREPL:
                 HistoryError,
                 OSError,
             ) as error:
-                self.output_func(f"Error: {error}")
+                self.display(f"Error: {error}", Fore.RED)
                 self.calculator.logger.warning(
                     f"Command error: {error}"
                 )

@@ -1,6 +1,6 @@
 
 import pytest
-
+from colorama import Fore, Style
 from app.calculator import Calculator
 from app.calculator_config import CalculatorConfig
 from app.exceptions import OperationError, ValidationError
@@ -164,3 +164,30 @@ def test_repl_eof(tmp_path):
     repl.run()
 
     assert output[-1] == "Goodbye!"
+
+
+def test_colored_result(tmp_path):
+    repl, output = make_repl(tmp_path)
+    repl.color_enabled = True
+
+    repl.execute("add 5 3")
+
+    assert output[-1] == (
+        Fore.GREEN + "Result: 8" + Style.RESET_ALL
+    )
+
+
+def test_colored_error(tmp_path):
+    repl, output = make_repl(tmp_path)
+    repl.color_enabled = True
+
+    commands = iter(["unknown", "exit"])
+    repl.input_func = lambda prompt: next(commands)
+
+    repl.run()
+
+    assert any(
+        message.startswith(Fore.RED + "Error:")
+        and message.endswith(Style.RESET_ALL)
+        for message in output
+    )
