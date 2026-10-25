@@ -41,11 +41,11 @@ I also added color-coded outputs to make the command-line interface easier to us
 ### 1. Clone the repository
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
+git clone git@github.com:Xiaodu7/MidtermCalculator.git
 cd MidtermCalculator
 ```
 
-Replace `<YOUR_REPOSITORY_URL>` with the actual GitHub repository URL.
+Replace `git@github.com:Xiaodu7/MidtermCalculator.git` with the actual GitHub repository URL.
 
 ### 2. Create a virtual environment
 
